@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from .database import get_db
-from .models import Report
+from database import get_db
+from models import Report
 from pydantic import BaseModel
 
 app = FastAPI()

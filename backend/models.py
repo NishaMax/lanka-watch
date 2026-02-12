@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from geoalchemy2 import Geometry # For handling location data
-from .database import Base
+from database import Base
 import datetime
 
 class Report(Base):
