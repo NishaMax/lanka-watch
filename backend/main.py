@@ -15,13 +15,12 @@ class ReportCreate(BaseModel):
 
 @app.post("/reports/")
 def create_report(report: ReportCreate, db: Session = Depends(get_db)):
-    # Convert lat/lng to a WKT (Well-Known Text) point for PostGIS
-    point = f'POINT({report.lng} {report.lat})'
-    
+    # Notice we removed the 'point =' logic because we are using Floats now
     new_report = Report(
         category=report.category,
         description=report.description,
-        location=point
+        lat=report.lat,  # Use the new column name
+        lng=report.lng   # Use the new column name
     )
     
     db.add(new_report)

@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime
-from geoalchemy2 import Geometry # For handling location data
-from database import Base
+from sqlalchemy import Column, Integer, String, Float, DateTime
+from database import Base # Remove the dot here too
 import datetime
 
 class Report(Base):
@@ -10,6 +9,9 @@ class Report(Base):
     category = Column(String)
     description = Column(String)
     status = Column(String, default="unverified")
-    # This stores the lat/lng as a geometry point
-    location = Column(Geometry('POINT', srid=4326)) 
+    
+    # ADD THESE TWO LINES:
+    lat = Column(Float)
+    lng = Column(Float)
+    
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
