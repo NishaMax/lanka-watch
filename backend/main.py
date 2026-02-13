@@ -3,8 +3,16 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import Report
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # In production, you'd limit this to your frontend URL
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Pydantic model for receiving data from frontend
 class ReportCreate(BaseModel):
@@ -27,3 +35,7 @@ def create_report(report: ReportCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_report)
     return {"message": "Report saved successfully!", "id": new_report.id}
+
+@app.get("/reports/")
+def get_reports(db: Session = Depends(get_db)):
+    return db.query(Report).all()
