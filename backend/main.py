@@ -47,3 +47,12 @@ def verify_report(report_id: int, db: Session = Depends(get_db)):
         
     db.commit()
     return {"message": "Vote recorded", "status": report.status}
+
+@app.delete("/reports/{report_id}")
+def delete_report(report_id: int, db: Session = Depends(get_db)):
+    report = db.query(Report).filter(Report.id == report_id).first()
+    if not report:
+        return {"error": "Report not found"}
+    db.delete(report)
+    db.commit()
+    return {"message": "Report deleted successfully"}
