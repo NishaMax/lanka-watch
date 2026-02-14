@@ -42,10 +42,13 @@ function App() {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchReports(); }, []);
 
+  // 2. Initialize Map
   useEffect(() => {
-    if (map.current) return;
+    // FIX 1: If we aren't logged in, or the div isn't ready, don't start the map
+    if (!session || !mapContainer.current || map.current) return;
+
     map.current = new maplibregl.Map({
-      container: mapContainer.current,
+      container: mapContainer.current, // Now we are sure this isn't null
       style: 'https://tiles.openfreemap.org/styles/bright',
       center: [80.3992, 6.6828], // Ratnapura
       zoom: 10
@@ -55,7 +58,15 @@ function App() {
       setFormData(prev => ({ ...prev, lat: e.lngLat.lat, lng: e.lngLat.lng }));
       setShowForm(true);
     });
-  }, []);
+
+    // Cleanup function
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, [session]); // FIX 2: Re-run this when the session status changes
 
   // Search Function Logic
   const handleSearch = async (e) => {
