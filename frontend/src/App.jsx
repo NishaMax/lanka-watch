@@ -113,14 +113,32 @@ function App() {
       `;
 
       popupNode.querySelector('button').addEventListener('click', async () => {
-        await fetch(`${import.meta.env.VITE_API_URL}/reports/${report.id}/verify`, { method: 'POST' });
-        fetchReports();
+        const userId = session?.user?.id;
+        if (!userId) {
+          alert("You must be logged in to verify.");
+          return;
+        }
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/reports/${report.id}/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
+          });
+          if (res.ok) {
+            fetchReports();
+          } else {
+            const data = await res.json();
+            alert(data.detail || "Verification failed.");
+          }
+        } catch (err) {
+          console.error("Verify error:", err);
+        }
       });
 
       const popup = new maplibregl.Popup({ offset: 25 }).setDOMContent(popupNode);
       new maplibregl.Marker({ color: markerColor }).setLngLat([report.lng, report.lat]).setPopup(popup).addTo(map.current);
     });
-  }, [reports, filter]);
+  }, [reports, filter, session]);
 
   const _handleDelete = async (id) => {
     try {
