@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabase } from './supabaseClient';
-import Auth from './components/Auth';
+import Auth from './auth_components/Auth.jsx';
 
 function App() {
   const [session, setSession] = useState(null);
