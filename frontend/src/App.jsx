@@ -15,7 +15,7 @@ function App() {
 
   const fetchReports = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:8000/reports/');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/reports/`);
       const data = await res.json();
       setReports(data);
     } catch (err) { console.error(err); }
@@ -84,7 +84,7 @@ function App() {
       `;
 
       popupNode.querySelector('button').addEventListener('click', async () => {
-        await fetch(`http://127.0.0.1:8000/reports/${report.id}/verify`, { method: 'POST' });
+        await fetch(`${import.meta.env.VITE_API_URL}/reports/${report.id}/verify`, { method: 'POST' });
         fetchReports();
       });
 
@@ -93,9 +93,26 @@ function App() {
     });
   }, [reports, filter]);
 
+  const _handleDelete = async (id) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/reports/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        alert("Report deleted successfully!");
+        fetchReports(); // Refresh the map to remove the marker
+      } else {
+        alert("Failed to delete report.");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch('http://127.0.0.1:8000/reports/', {
+    await fetch(`${import.meta.env.VITE_API_URL}/reports/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
