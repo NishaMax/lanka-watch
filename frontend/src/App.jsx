@@ -1,8 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { supabase } from './supabaseClient';
+import Auth from './components/Auth';
 
 function App() {
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    // Listen for login/logout changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [reports, setReports] = useState([]);
@@ -120,6 +138,10 @@ function App() {
     setShowForm(false);
     fetchReports();
   };
+
+  if (!session) {
+    return <Auth />;
+  }
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', fontFamily: 'Arial, sans-serif' }}>
